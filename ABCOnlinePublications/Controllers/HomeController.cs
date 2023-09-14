@@ -1,32 +1,39 @@
-﻿using ABCOnlinePublications.Models;
+﻿using ABCOnlinePublications.Factories;
+using ABCOnlinePublications.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 
 namespace ABCOnlinePublications.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly Dictionary<string, SectionViewModels> _sections;
+        private readonly SectionFactory _sectionFactory;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(Dictionary<string, SectionViewModels> sections, SectionFactory sectionFactory)
         {
-            _logger = logger;
+            _sections = sections;
+            _sectionFactory = sectionFactory;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string section = "preface")
         {
-            return View();
+            var sectionData = _sectionFactory.CreateSection(section);
+            if (sectionData == null)
+            {
+                return RedirectToAction("SectionNotFound", new { requestedSection = section });
+            }
+
+            return View(sectionData);
         }
 
-        public IActionResult Privacy()
+        public IActionResult SectionNotFound(string requestedSection)
         {
-            return View();
-        }
+            var viewModel = new SectionNotFoundViewModels
+            {
+                RequestedSection = requestedSection
+            };
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View(viewModel);
         }
     }
 }

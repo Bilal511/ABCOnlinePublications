@@ -1,8 +1,23 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model ABCOnlinePublications.ViewModels.SectionViewModels
+
+@{
+    ViewData["Title"] = Model.Title;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div>
+    <h1 class="text-center">@Model.Title</h1>
+    @if (Model.Content.Any())
+    {
+        @foreach (var paragraph in Model.Content)
+        {
+            <p>@paragraph</p>
+        }
+    }
+</div>
+<div>
+    <h2>Navigation</h2>
+    @foreach (var navItem in Model.Navigation)
+    {
+        <a href="/Home/Index?section=@navItem.Section">@navItem.Text</a><br />
+    }
 </div>
